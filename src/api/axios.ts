@@ -9,21 +9,14 @@ const api = axios.create({
 
 api.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('fairplay_token');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
 
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            try {
-                const user = JSON.parse(storedUser);
-                if (user.workspaces && user.workspaces.length > 0) {
-                    config.headers['x-workspace-id'] = user.workspaces[0].id;
-                }
-            } catch (e) {
-                console.error('Failed to parse user for workspace ID', e);
-            }
+        const workspaceId = localStorage.getItem('fairplay_workspaceId');
+        if (workspaceId) {
+            config.headers['x-workspace-id'] = workspaceId;
         }
 
         return config;

@@ -4,6 +4,7 @@ import { RouterView, RouterLink } from 'vue-router';
 import { useAuthStore } from './stores/auth.store';
 import LogoutButton from './components/LogoutButton.vue';
 import BrandLogo from './components/BrandLogo.vue';
+import WorkspaceSelector from './components/WorkspaceSelector.vue';
 
 const authStore = useAuthStore();
 
@@ -46,7 +47,8 @@ onMounted(() => {
               </RouterLink>
             </div>
           </div>
-          <div class="flex items-center">
+          <div class="flex items-center space-x-4">
+            <WorkspaceSelector />
             <LogoutButton />
           </div>
         </div>

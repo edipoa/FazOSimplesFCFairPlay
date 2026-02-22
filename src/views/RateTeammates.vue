@@ -55,7 +55,7 @@ const initData = async () => {
     // Map players and merge with history
     players.value = playersResponse.data.map((p: any) => ({
       ...p,
-      currentRating: historyMap.get(p.id) || p.rating || 0
+      currentRating: historyMap.get(p.id) || (p.workspaceRating ?? 3.0)
     }));
 
   } catch (err: any) {

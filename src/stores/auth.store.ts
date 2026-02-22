@@ -6,7 +6,7 @@ import { requestOtp as apiRequestOtp, login as apiLogin, getMe as apiGetMe, type
 
 // Safe function to load user from localStorage
 function getStoredUser() {
-    const stored = localStorage.getItem('user');
+    const stored = localStorage.getItem('fairplay_user');
     if (!stored || stored === 'undefined' || stored === 'null') {
         return null;
     }
@@ -14,23 +14,34 @@ function getStoredUser() {
         return JSON.parse(stored);
     } catch (e) {
         console.error('Failed to parse stored user', e);
-        localStorage.removeItem('user');
+        localStorage.removeItem('fairplay_user');
         return null;
     }
 }
 
 export const useAuthStore = defineStore('auth', () => {
     const user = ref<any | null>(getStoredUser());
-    const token = ref<string | null>(localStorage.getItem('token'));
+    const token = ref<string | null>(localStorage.getItem('fairplay_token'));
     const isAuthenticated = ref<boolean>(!!token.value);
     const loading = ref(false);
     const error = ref<string | null>(null);
 
-    // Computed property to check if user is admin in any workspace
-    const isAdmin = computed(() => {
-        if (!user.value || !user.value.workspaces) return false;
-        return user.value.workspaces.some((ws: any) => ws.role === 'ADMIN');
+    const currentWorkspaceId = ref<string | null>(localStorage.getItem('fairplay_workspaceId'));
+
+    const currentWorkspace = computed(() => {
+        if (!user.value || !user.value.workspaces || !currentWorkspaceId.value) return null;
+        return user.value.workspaces.find((ws: any) => ws.id === currentWorkspaceId.value) || null;
     });
+
+    const isAdmin = computed(() => {
+        if (!currentWorkspace.value) return false;
+        return currentWorkspace.value.role === 'ADMIN' || currentWorkspace.value.role === 'OWNER';
+    });
+
+    const setWorkspace = (workspaceId: string) => {
+        currentWorkspaceId.value = workspaceId;
+        localStorage.setItem('fairplay_workspaceId', workspaceId);
+    };
 
 
     const setAuth = (response: LoginResponse) => {
@@ -41,11 +52,21 @@ export const useAuthStore = defineStore('auth', () => {
         user.value = response.data.user;
         token.value = response.data.accessToken;
         isAuthenticated.value = true;
-        localStorage.setItem('token', response.data.accessToken);
+        localStorage.setItem('fairplay_token', response.data.accessToken);
         try {
-            localStorage.setItem('user', JSON.stringify(response.data.user));
+            localStorage.setItem('fairplay_user', JSON.stringify(response.data.user));
         } catch (e) {
             console.error('Failed to stringify user for localStorage', e);
+        }
+
+        const savedWorkspaceId = localStorage.getItem('fairplay_workspaceId');
+        if (savedWorkspaceId && user.value.workspaces?.some((ws: any) => ws.id === savedWorkspaceId)) {
+            currentWorkspaceId.value = savedWorkspaceId;
+        } else if (user.value.workspaces && user.value.workspaces.length > 0) {
+            setWorkspace(user.value.workspaces[0].id);
+        } else {
+            currentWorkspaceId.value = null;
+            localStorage.removeItem('fairplay_workspaceId');
         }
     };
 
@@ -53,8 +74,10 @@ export const useAuthStore = defineStore('auth', () => {
         user.value = null;
         token.value = null;
         isAuthenticated.value = false;
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        currentWorkspaceId.value = null;
+        localStorage.removeItem('fairplay_token');
+        localStorage.removeItem('fairplay_user');
+        localStorage.removeItem('fairplay_workspaceId');
     };
 
     const requestOtp = async (phone: string) => {
@@ -113,7 +136,7 @@ export const useAuthStore = defineStore('auth', () => {
             if (userData && typeof userData === 'object') {
                 user.value = userData;
                 try {
-                    localStorage.setItem('user', JSON.stringify(userData));
+                    localStorage.setItem('fairplay_user', JSON.stringify(userData));
                 } catch (e) {
                     console.error('Failed to save user to localStorage', e);
                 }
@@ -135,9 +158,12 @@ export const useAuthStore = defineStore('auth', () => {
         user,
         token,
         isAuthenticated,
+        currentWorkspaceId,
+        currentWorkspace,
         isAdmin,
         loading,
         error,
+        setWorkspace,
         requestOtp,
         login,
         logout,

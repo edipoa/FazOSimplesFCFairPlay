@@ -12,7 +12,7 @@ interface Player {
   id: string;
   name: string;
   position: string;
-  rating: number;
+  workspaceRating: number;
 }
 
 interface TeamStats {
@@ -35,7 +35,7 @@ const showConfirmModal = ref(false);
 // Computation for stats
 const calculateStats = (players: Player[]): TeamStats => {
   if (players.length === 0) return { averageRating: 0, totalPlayers: 0 };
-  const totalRating = players.reduce((sum, p) => sum + (p.rating || 0), 0);
+  const totalRating = players.reduce((sum, p) => sum + (p.workspaceRating || 0), 0);
   return {
     averageRating: totalRating / players.length,
     totalPlayers: players.length
@@ -61,7 +61,7 @@ const mapPlayer = (p: any): Player => {
     id: id || '',
     name: p.name || 'Desconhecido',
     position: p.profile?.mainPosition || p.position || 'N/A',
-    rating: p.profile?.rating || p.rating || 0
+    workspaceRating: p.workspaceRating ?? 3.0
   };
 };
 
@@ -288,7 +288,7 @@ onMounted(() => {
                    </div>
                    <span class="text-sm font-medium text-slate-700">{{ element.name }}</span>
                    <div v-if="element.id" class="flex items-center space-x-0.5 text-[10px] text-slate-400">
-                     <span>{{ element.rating }}</span>
+                     <span>{{ element.workspaceRating }}</span>
                      <Star class="w-2.5 h-2.5 text-yellow-400 fill-current" />
                    </div>
                    <span v-else class="text-[10px] text-gray-400 italic">Convidado</span>
@@ -329,7 +329,7 @@ onMounted(() => {
                  </div>
                  
                  <div class="flex items-center space-x-1 text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">
-                    <span>{{ element.rating }}</span>
+                    <span>{{ element.workspaceRating }}</span>
                     <Star class="w-3 h-3 text-yellow-500 fill-current" />
                  </div>
                </div>
@@ -371,7 +371,7 @@ onMounted(() => {
                  </div>
                  
                  <div class="flex items-center space-x-1 text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">
-                    <span>{{ element.rating }}</span>
+                    <span>{{ element.workspaceRating }}</span>
                     <Star class="w-3 h-3 text-yellow-500 fill-current" />
                  </div>
                </div>
