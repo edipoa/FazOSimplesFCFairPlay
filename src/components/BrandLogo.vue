@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import logoImg from '../assets/logo.png';
+import logoImgDark from '../assets/white-logo.png';
 
 withDefaults(defineProps<{
   size?: 'sm' | 'md' | 'lg';
@@ -26,11 +27,23 @@ const handleImageError = (event: Event) => {
     }"
   >
     <div class="relative flex items-center justify-center">
-      <!-- Image Container (Placeholder if image is missing) -->
+      <!-- Light Mode Image -->
       <img 
         :src="logoImg" 
         alt="Faz o Simples FC Logo" 
-        class="object-contain transition-all duration-300"
+        class="object-contain transition-all duration-300 dark:hidden"
+        :class="{
+          'h-24 w-16': size === 'sm',
+          'h-24 w-24': size === 'md' || !size,
+          'h-32 w-32': size === 'lg'
+        }"
+        @error="handleImageError"
+      />
+      <!-- Dark Mode Image -->
+      <img 
+        :src="logoImgDark" 
+        alt="Faz o Simples FC Logo Dark" 
+        class="object-contain transition-all duration-300 hidden dark:block"
         :class="{
           'h-12 w-12': size === 'sm',
           'h-24 w-24': size === 'md' || !size,
@@ -48,7 +61,7 @@ const handleImageError = (event: Event) => {
       }"
     >
       <h1 
-        class="font-bold text-bf-navy leading-tight"
+        class="font-bold text-bf-navy dark:text-white leading-tight"
         :class="{
           'text-lg': size === 'sm',
           'text-2xl': size === 'md' || !size,

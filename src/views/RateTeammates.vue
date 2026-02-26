@@ -123,18 +123,18 @@ onBeforeRouteLeave((_to, _from, next) => {
 </script>
 
 <template>
-  <div class="max-w-2xl mx-auto p-4 space-y-6 pb-24"> <!-- Added pb-24 for fixed bottom bar space -->
+  <div class="max-w-2xl mx-auto p-4 space-y-6 pb-24 animate-in fade-in duration-500 transition-colors"> <!-- Added pb-24 for fixed bottom bar space -->
     <div class="text-center mb-8">
-      <h2 class="text-2xl font-bold text-gray-900">Avaliar Companheiros</h2>
-      <p class="text-gray-500">Ajude a equilibrar os times avaliando seus colegas.</p>
+      <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">Avaliar Companheiros</h2>
+      <p class="text-neutral-500 dark:text-neutral-400 mt-1">Ajude a equilibrar os times avaliando seus colegas.</p>
     </div>
 
-    <div v-if="loading || isLoadingHistory" class="text-center py-10">
-      <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600 mx-auto"></div>
-      <p class="mt-2 text-gray-500">Carregando jogadores e histórico...</p>
+    <div v-if="loading || isLoadingHistory" class="text-center py-10 bg-white/60 dark:bg-neutral-900/60 rounded-2xl border border-neutral-200 dark:border-neutral-800/80 shadow-sm backdrop-blur-md">
+      <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-brand mx-auto"></div>
+      <p class="mt-4 text-neutral-500 dark:text-neutral-400 font-medium">Carregando jogadores...</p>
     </div>
 
-    <div v-else-if="error" class="text-center text-red-600 bg-red-50 p-4 rounded-md">
+    <div v-else-if="error" class="text-center text-red-600 dark:text-red-400 bg-red-50/80 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 p-4 rounded-xl font-medium backdrop-blur-sm shadow-sm transition-all">
       {{ error }}
     </div>
 
@@ -142,25 +142,26 @@ onBeforeRouteLeave((_to, _from, next) => {
       <div 
         v-for="player in players" 
         :key="player.id" 
-        class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center space-y-3 transition-colors duration-200"
-        :class="{ 'border-indigo-300 ring-1 ring-indigo-300': pendingRatings[player.id] !== undefined }"
+        class="bg-white/60 dark:bg-neutral-900/60 backdrop-blur-md rounded-2xl border border-neutral-200 dark:border-neutral-800/80 p-5 flex flex-col items-center space-y-4 hover:border-[rgba(130,81,238,0.5)] transition-all duration-300 hover:shadow-[0_0_20px_rgba(130,81,238,0.1)] group"
+        :class="{ 'ring-1 ring-[rgba(130,81,238,0.5)] border-[rgba(130,81,238,0.5)] bg-[rgba(130,81,238,0.05)] dark:bg-[rgba(130,81,238,0.1)]': pendingRatings[player.id] !== undefined }"
       >
-        <div class="h-12 w-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-lg">
+        <div class="h-14 w-14 rounded-full bg-brand/10 dark:bg-brand/20 flex items-center justify-center text-brand dark:text-brand-light font-bold text-xl shadow-inner group-hover:bg-brand/20 dark:group-hover:bg-brand/30 transition-colors">
           {{ player.name.charAt(0).toUpperCase() }}
         </div>
         <div class="text-center">
-            <h3 class="font-medium text-gray-900">{{ player.name }}</h3>
-            <p class="text-xs text-gray-500">{{ player.position }}</p>
+            <h3 class="font-semibold text-neutral-800 dark:text-neutral-100 tracking-tight">{{ player.name }}</h3>
+            <p class="text-xs font-semibold text-neutral-500 dark:text-neutral-400 mt-0.5 uppercase tracking-wider">{{ player.position }}</p>
         </div>
         
         <StarRating 
           :model-value="player.currentRating || 0" 
           @update:model-value="(val) => handleRatingChange(player.id, val)"
+          class="drop-shadow-sm"
         />
       </div>
     </div>
     
-    <div v-if="!loading && players.length === 0" class="text-center text-gray-500 py-10">
+    <div v-if="!loading && players.length === 0" class="text-center text-neutral-500 dark:text-neutral-400 py-10 bg-white/60 dark:bg-neutral-900/60 rounded-2xl border border-neutral-200 dark:border-neutral-800/80 shadow-sm backdrop-blur-md">
         Nenhum jogador disponível para avaliação no momento.
     </div>
 
@@ -173,15 +174,15 @@ onBeforeRouteLeave((_to, _from, next) => {
       leave-from-class="opacity-100"
       leave-to-class="translate-y-full opacity-0"
     >
-      <div v-if="hasUnsavedChanges" class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg z-40">
+      <div v-if="hasUnsavedChanges" class="fixed bottom-0 left-0 right-0 glass-header border-t border-neutral-200/50 dark:border-neutral-800/50 p-4 z-40 backdrop-blur-xl bg-white/80 dark:bg-neutral-950/80 transition-colors">
         <div class="max-w-2xl mx-auto flex items-center justify-between">
-          <span class="text-sm text-gray-600 font-medium">
+          <span class="text-sm text-neutral-900 dark:text-neutral-100 font-medium">
              {{ Object.keys(pendingRatings).length }} {{ Object.keys(pendingRatings).length === 1 ? 'avaliação pendente' : 'avaliações pendentes' }}
           </span>
           <button 
             @click="submitRatings"
             :disabled="isSubmitting"
-            class="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            class="inline-flex items-center cursor-pointer px-6 py-2.5 rounded-xl shadow-[0_4px_14px_0_rgba(130,81,238,0.39)] text-sm font-semibold text-white bg-[rgba(130,81,238,1)] hover:bg-[rgba(110,61,218,1)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[rgba(130,81,238,0.5)] dark:focus:ring-offset-neutral-900 disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed transition-all duration-200 active:scale-[0.98]"
           >
             <Loader2 v-if="isSubmitting" class="animate-spin -ml-1 mr-2 h-4 w-4" />
             {{ isSubmitting ? 'Enviando...' : 'Submeter Votos' }}

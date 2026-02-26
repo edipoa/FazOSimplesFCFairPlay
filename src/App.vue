@@ -2,83 +2,106 @@
 import { onMounted } from 'vue';
 import { RouterView, RouterLink } from 'vue-router';
 import { useAuthStore } from './stores/auth.store';
+import { useThemeStore } from './stores/theme.store';
 import LogoutButton from './components/LogoutButton.vue';
 import BrandLogo from './components/BrandLogo.vue';
 import WorkspaceSelector from './components/WorkspaceSelector.vue';
+import { Sun, Moon } from 'lucide-vue-next';
 
 const authStore = useAuthStore();
+const themeStore = useThemeStore();
 
 onMounted(() => {
   authStore.checkAuth();
+  themeStore.initTheme();
 });
 </script>
 
 <template>
-  <div class="min-h-screen bg-background font-sans text-foreground">
-    <header v-if="authStore.isAuthenticated" class="bg-card shadow">
+  <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 font-sans text-neutral-900 dark:text-neutral-50 flex flex-col relative selection:bg-[rgba(130,81,238,0.2)] selection:text-[rgba(130,81,238,1)] transition-colors duration-300">
+    
+    <!-- Premium Glass Header -->
+    <header v-if="authStore.isAuthenticated" class="sticky top-0 z-50 w-full bg-white/60 dark:bg-neutral-900/60 backdrop-blur-md border-b border-neutral-200/50 dark:border-neutral-800/80 transition-colors duration-300">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-          <div class="flex">
-            <div class="flex-shrink-0 flex items-center py-2">
+        <div class="flex justify-between h-16 items-center">
+          <div class="flex items-center">
+            <div class="flex-shrink-0 flex items-center py-2 mr-4">
               <BrandLogo size="sm" :show-subtitle="true" layout="horizontal" />
             </div>
-            <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+            <!-- Desktop Nav -->
+            <div class="hidden sm:ml-6 sm:flex sm:space-x-2">
               <RouterLink 
                 to="/profile" 
-                class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                active-class="border-indigo-500 text-gray-900"
+                class="px-4 py-2 rounded-md text-sm font-medium transition-all duration-200"
+                active-class="bg-brand/10 text-brand dark:bg-brand/20 dark:text-brand-light"
+                :class="[$route.path !== '/profile' ? 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800' : '']"
               >
                 Perfil
               </RouterLink>
               <RouterLink 
                 to="/rate" 
-                class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                active-class="border-indigo-500 text-gray-900"
+                class="px-4 py-2 rounded-md text-sm font-medium transition-all duration-200"
+                active-class="bg-brand/10 text-brand dark:bg-brand/20 dark:text-brand-light"
+                :class="[$route.path !== '/rate' ? 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800' : '']"
               >
                 Avaliar
               </RouterLink>
               <RouterLink 
                 v-if="authStore.isAdmin"
                 to="/admin/games" 
-                class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                active-class="border-indigo-500 text-gray-900"
+                class="px-4 py-2 rounded-md text-sm font-medium transition-all duration-200"
+                active-class="bg-brand/10 text-brand dark:bg-brand/20 dark:text-brand-light"
+                :class="[$route.path.startsWith('/admin') ? 'bg-brand/10 text-brand dark:bg-brand/20 dark:text-brand-light' : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800']"
               >
                 Admin
               </RouterLink>
             </div>
           </div>
-          <div class="flex items-center space-x-4">
-            <WorkspaceSelector />
+          
+          <!-- Actions -->
+          <div class="flex items-center space-x-3">
+            <WorkspaceSelector class="hidden sm:block" />
+            
+            <!-- Global Theme Toggle Button -->
+            <button 
+              @click="themeStore.toggleTheme" 
+              class="p-2 rounded-full border border-neutral-200 dark:border-neutral-700 shadow-sm hover:shadow-md hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all text-neutral-600 dark:text-neutral-300 cursor-pointer"
+              aria-label="Toggle Theme"
+            >
+              <Sun v-if="themeStore.isDark" class="w-4 h-4" />
+              <Moon v-else class="w-4 h-4" />
+            </button>
+
             <LogoutButton />
           </div>
         </div>
       </div>
       
       <!-- Mobile menu (simplified) -->
-      <div class="sm:hidden border-t border-gray-200">
+      <div class="sm:hidden border-t border-neutral-200/50 dark:border-neutral-800/80 bg-white/50 dark:bg-neutral-900/50 backdrop-blur-lg">
         <div class="flex justify-around p-2">
            <RouterLink 
                 to="/profile" 
-                class="px-3 py-2 rounded-md text-sm font-medium"
-                active-class="bg-indigo-50 text-indigo-700"
-                :class="[$route.path !== '/profile' ? 'text-gray-500 hover:text-gray-700' : '']"
+                class="px-3 py-2 rounded-md text-sm font-medium transition-all"
+                active-class="bg-brand/10 text-brand dark:bg-brand/20 dark:text-brand-light"
+                :class="[$route.path !== '/profile' ? 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white' : '']"
               >
                 Perfil
             </RouterLink>
             <RouterLink 
                 to="/rate" 
-                class="px-3 py-2 rounded-md text-sm font-medium"
-                active-class="bg-indigo-50 text-indigo-700"
-                :class="[$route.path !== '/rate' ? 'text-gray-500 hover:text-gray-700' : '']"
+                class="px-3 py-2 rounded-md text-sm font-medium transition-all"
+                active-class="bg-brand/10 text-brand dark:bg-brand/20 dark:text-brand-light"
+                :class="[$route.path !== '/rate' ? 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white' : '']"
               >
                 Avaliar
             </RouterLink>
             <RouterLink 
                 v-if="authStore.isAdmin"
                 to="/admin/games" 
-                class="px-3 py-2 rounded-md text-sm font-medium"
-                active-class="bg-indigo-50 text-indigo-700"
-                :class="[$route.path.startsWith('/admin') ? 'bg-indigo-50 text-indigo-700' : 'text-gray-500 hover:text-gray-700']"
+                class="px-3 py-2 rounded-md text-sm font-medium transition-all"
+                active-class="bg-brand/10 text-brand dark:bg-brand/20 dark:text-brand-light"
+                :class="[$route.path.startsWith('/admin') ? 'bg-brand/10 text-brand dark:bg-brand/20 dark:text-brand-light' : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white']"
               >
                 Admin
             </RouterLink>
@@ -86,10 +109,9 @@ onMounted(() => {
       </div>
     </header>
 
-    <main class="py-10">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <RouterView />
-      </div>
+    <!-- Main Content Area -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10 flex flex-col">
+      <router-view />
     </main>
   </div>
 </template>

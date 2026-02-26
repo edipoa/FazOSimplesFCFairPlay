@@ -4,9 +4,8 @@ import ProfileSetup from '../views/ProfileSetup.vue';
 import RateTeammates from '../views/RateTeammates.vue';
 import Login from '../views/Login.vue';
 
-// Admin Views (Loaded lazily)
-const AdminGameList = () => import('../views/admin/GameList.vue');
-const AdminTeamBuilder = () => import('../views/admin/TeamBuilder.vue');
+import AdminGameList from '../views/admin/GameList.vue';
+import AdminTeamBuilder from '../views/admin/TeamBuilder.vue';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
