@@ -3,6 +3,7 @@ import { useAuthStore } from '../stores/auth.store';
 import ProfileSetup from '../views/ProfileSetup.vue';
 import RateTeammates from '../views/RateTeammates.vue';
 import Login from '../views/Login.vue';
+import Unauthorized from '../views/Unauthorized.vue';
 
 import AdminGameList from '../views/admin/GameList.vue';
 import AdminTeamBuilder from '../views/admin/TeamBuilder.vue';
@@ -16,33 +17,40 @@ const router = createRouter({
             component: Login,
         },
         {
-            path: '/',
-            redirect: '/profile',
+            path: '/unauthorized',
+            name: 'unauthorized',
+            component: Unauthorized,
         },
+        // Workspace-scoped routes
         {
-            path: '/profile',
+            path: '/:workspaceId/profile',
             name: 'profile',
             component: ProfileSetup,
             meta: { requiresAuth: true },
         },
         {
-            path: '/rate',
+            path: '/:workspaceId/rate',
             name: 'rate',
             component: RateTeammates,
             meta: { requiresAuth: true },
         },
-        // Admin Routes
+        // Admin routes
         {
-            path: '/admin/games',
+            path: '/:workspaceId/admin/games',
             name: 'admin-games',
             component: AdminGameList,
             meta: { requiresAuth: true, requiresAdmin: true },
         },
         {
-            path: '/admin/games/:id/builder',
+            path: '/:workspaceId/admin/games/:id/builder',
             name: 'admin-team-builder',
             component: AdminTeamBuilder,
             meta: { requiresAuth: true, requiresAdmin: true },
+        },
+        // Fallback: redirect root to login (guard will forward to workspace once authed)
+        {
+            path: '/',
+            redirect: () => ({ name: 'login' }),
         },
     ],
 });
@@ -50,25 +58,53 @@ const router = createRouter({
 router.beforeEach(async (to, _from, next) => {
     const authStore = useAuthStore();
 
-    // Check auth status if not already checked (e.g. page refresh)
+    // Rehydrate auth state on hard page refresh
     if (!authStore.isAuthenticated && authStore.token) {
         await authStore.checkAuth();
     }
 
-    if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-        next({ name: 'login' });
-    } else if (to.name === 'login' && authStore.isAuthenticated) {
-        next({ name: 'profile' }); // Redirect to home if already logged in
-    } else if (to.meta.requiresAdmin) {
-        // Init Check if user is admin
-        if (!authStore.isAdmin) {
-            next({ name: 'profile' }); // Redirect to profile if not admin
-        } else {
-            next();
+    // --- Public routes ---
+    if (!to.meta.requiresAuth) {
+        if (to.name === 'login' && authStore.isAuthenticated) {
+            const workspaceId = authStore.currentWorkspaceId;
+            if (workspaceId) {
+                return next({ name: 'profile', params: { workspaceId } });
+            }
         }
-    } else {
-        next();
+        return next();
     }
+
+    // --- Requires auth ---
+    if (!authStore.isAuthenticated) {
+        return next({ name: 'login' });
+    }
+
+    // --- Validate tenant membership ---
+    const workspaceId = to.params.workspaceId as string;
+    const userWorkspaces: any[] = authStore.user?.workspaces ?? [];
+    const hasAccess = userWorkspaces.some((ws) => ws.id === workspaceId);
+
+    if (!hasAccess) {
+        // Redirect to the user's first valid workspace on the same route type,
+        // falling back to profile to avoid needing extra params (e.g. :id).
+        const firstWorkspace = userWorkspaces[0];
+        if (firstWorkspace) {
+            return next({ name: 'profile', params: { workspaceId: firstWorkspace.id } });
+        }
+        return next({ name: 'unauthorized' });
+    }
+
+    // Sync store if the URL workspace differs (e.g. direct link or back-button navigation)
+    if (authStore.currentWorkspaceId !== workspaceId) {
+        authStore.setWorkspace(workspaceId);
+    }
+
+    // --- Admin guard ---
+    if (to.meta.requiresAdmin && !authStore.isAdmin) {
+        return next({ name: 'profile', params: { workspaceId } });
+    }
+
+    return next();
 });
 
 export default router;

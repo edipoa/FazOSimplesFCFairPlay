@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { workspaceContext } from './workspace-context';
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001/api',
@@ -14,26 +15,21 @@ api.interceptors.request.use(
             config.headers.Authorization = `Bearer ${token}`;
         }
 
-        const workspaceId = localStorage.getItem('fairplay_workspaceId');
+        // Reads from the reactive workspace context, which is always
+        // up-to-date because the auth store writes to it on every change.
+        const workspaceId = workspaceContext.id;
         if (workspaceId) {
             config.headers['x-workspace-id'] = workspaceId;
         }
 
         return config;
     },
-    (error) => {
-        return Promise.reject(error);
-    }
+    (error) => Promise.reject(error)
 );
 
 api.interceptors.response.use(
     (response) => response,
-    (error) => {
-        if (error.response?.status === 400) {
-            return Promise.reject(error);
-        }
-        return Promise.reject(error);
-    }
+    (error) => Promise.reject(error)
 );
 
 export default api;

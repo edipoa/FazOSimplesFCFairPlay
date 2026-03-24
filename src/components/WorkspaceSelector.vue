@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth.store';
 import { ChevronDown, Building2, Check } from 'lucide-vue-next';
 
 const authStore = useAuthStore();
+const router = useRouter();
 const isOpen = ref(false);
 const dropdownRef = ref<HTMLElement | null>(null);
 
@@ -12,32 +14,37 @@ const toggleDropdown = () => {
 };
 
 const handleWorkspaceChange = (workspaceId: string) => {
-  if (workspaceId && workspaceId !== authStore.currentWorkspaceId) {
+    isOpen.value = false;
+    if (workspaceId === authStore.currentWorkspaceId) return;
+
+    // setWorkspace updates the store + workspaceContext + clears workspace-scoped data
     authStore.setWorkspace(workspaceId);
-    window.location.reload();
-  }
-  isOpen.value = false;
+
+    // Navigate to the new workspace's profile page.
+    // RouterView key="$route.params.workspaceId" in App.vue will force
+    // a full component remount, so all onMounted data-fetching fires fresh.
+    router.push({ name: 'profile', params: { workspaceId } });
 };
 
 const closeDropdown = (e: MouseEvent) => {
-  if (dropdownRef.value && !dropdownRef.value.contains(e.target as Node)) {
-    isOpen.value = false;
-  }
+    if (dropdownRef.value && !dropdownRef.value.contains(e.target as Node)) {
+        isOpen.value = false;
+    }
 };
 
 onMounted(() => {
-  document.addEventListener('click', closeDropdown);
+    document.addEventListener('click', closeDropdown);
 });
 
 onUnmounted(() => {
-  document.removeEventListener('click', closeDropdown);
+    document.removeEventListener('click', closeDropdown);
 });
 </script>
 
 <template>
   <div v-if="authStore.isAuthenticated && authStore.user?.workspaces?.length > 1" class="flex items-center" ref="dropdownRef">
     <div class="relative group">
-      <button 
+      <button
         @click="toggleDropdown"
         class="flex items-center justify-between w-full min-w-[100px] sm:min-w-[140px] max-w-[120px] sm:max-w-xs bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm font-medium rounded-lg px-2 sm:px-3 py-1.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all shadow-sm"
       >
@@ -59,7 +66,7 @@ onUnmounted(() => {
                Seus Grupos
             </div>
             <button
-               v-for="workspace in authStore.user.workspaces" 
+              v-for="workspace in authStore.user.workspaces"
               :key="workspace.id"
               @click="handleWorkspaceChange(workspace.id)"
               class="w-full text-left px-4 py-2.5 text-sm hover:bg-indigo-50 hover:text-indigo-700 flex items-center justify-between transition-colors duration-150"

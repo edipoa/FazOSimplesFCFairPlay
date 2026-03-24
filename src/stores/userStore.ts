@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import api from '../api/axios';
+import { onWorkspaceChange } from './auth.store';
 
 interface UserProfile {
     id?: string;
@@ -14,6 +15,14 @@ export const useUserStore = defineStore('user', () => {
     const user = ref<UserProfile | null>(null);
     const loading = ref(false);
     const error = ref<string | null>(null);
+
+    // Clear workspace-scoped profile data when the tenant changes
+    const reset = () => {
+        user.value = null;
+        error.value = null;
+    };
+
+    onWorkspaceChange(reset);
 
     const fetchProfile = async () => {
         loading.value = true;
@@ -54,5 +63,6 @@ export const useUserStore = defineStore('user', () => {
         error,
         fetchProfile,
         saveProfile,
+        reset,
     };
 });

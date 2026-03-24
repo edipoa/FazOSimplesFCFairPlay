@@ -69,8 +69,8 @@ const handleLogin = async () => {
     const formattedPhone = `55${raw}`; 
 
     const success = await authStore.login(formattedPhone, otp.value);
-    if (success) {
-        router.push('/');
+    if (success && authStore.currentWorkspaceId) {
+        router.push({ name: 'profile', params: { workspaceId: authStore.currentWorkspaceId } });
     }
 };
 

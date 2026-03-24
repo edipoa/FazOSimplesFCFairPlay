@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 
 import { requestOtp as apiRequestOtp, login as apiLogin, getMe as apiGetMe, type LoginResponse } from '../api/auth.service';
+import { workspaceContext } from '../api/workspace-context';
 
 // Safe function to load user from localStorage
 function getStoredUser() {
@@ -19,6 +20,16 @@ function getStoredUser() {
     }
 }
 
+// Callbacks registered by other stores to clear workspace-scoped data on tenant switch.
+// This avoids direct store-to-store imports and circular deps.
+type ClearCallback = () => void;
+const workspaceClearCallbacks: ClearCallback[] = [];
+
+/** Other stores call this to register their clear/reset action. */
+export const onWorkspaceChange = (cb: ClearCallback) => {
+    workspaceClearCallbacks.push(cb);
+};
+
 export const useAuthStore = defineStore('auth', () => {
     const user = ref<any | null>(getStoredUser());
     const token = ref<string | null>(localStorage.getItem('fairplay_token'));
@@ -26,7 +37,7 @@ export const useAuthStore = defineStore('auth', () => {
     const loading = ref(false);
     const error = ref<string | null>(null);
 
-    const currentWorkspaceId = ref<string | null>(localStorage.getItem('fairplay_workspaceId'));
+    const currentWorkspaceId = ref<string | null>(workspaceContext.id);
 
     const currentWorkspace = computed(() => {
         if (!user.value || !user.value.workspaces || !currentWorkspaceId.value) return null;
@@ -39,10 +50,15 @@ export const useAuthStore = defineStore('auth', () => {
     });
 
     const setWorkspace = (workspaceId: string) => {
+        const isChanging = workspaceId !== currentWorkspaceId.value;
         currentWorkspaceId.value = workspaceId;
-        localStorage.setItem('fairplay_workspaceId', workspaceId);
-    };
+        workspaceContext.set(workspaceId);
 
+        // Notify all registered stores to clear their workspace-scoped data
+        if (isChanging) {
+            workspaceClearCallbacks.forEach((cb) => cb());
+        }
+    };
 
     const setAuth = (response: LoginResponse) => {
         if (!response.data || !response.data.user) {
@@ -59,14 +75,14 @@ export const useAuthStore = defineStore('auth', () => {
             console.error('Failed to stringify user for localStorage', e);
         }
 
-        const savedWorkspaceId = localStorage.getItem('fairplay_workspaceId');
+        const savedWorkspaceId = workspaceContext.id;
         if (savedWorkspaceId && user.value.workspaces?.some((ws: any) => ws.id === savedWorkspaceId)) {
             currentWorkspaceId.value = savedWorkspaceId;
         } else if (user.value.workspaces && user.value.workspaces.length > 0) {
             setWorkspace(user.value.workspaces[0].id);
         } else {
             currentWorkspaceId.value = null;
-            localStorage.removeItem('fairplay_workspaceId');
+            workspaceContext.set(null);
         }
     };
 
@@ -75,9 +91,9 @@ export const useAuthStore = defineStore('auth', () => {
         token.value = null;
         isAuthenticated.value = false;
         currentWorkspaceId.value = null;
+        workspaceContext.set(null);
         localStorage.removeItem('fairplay_token');
         localStorage.removeItem('fairplay_user');
-        localStorage.removeItem('fairplay_workspaceId');
     };
 
     const requestOtp = async (phone: string) => {
@@ -102,7 +118,6 @@ export const useAuthStore = defineStore('auth', () => {
         try {
             const response = await apiLogin(phone, code);
 
-            // Validate that user data is present in response
             if (!response.data || !response.data.user) {
                 console.error('Login response missing user data:', response);
                 throw new Error('Erro no servidor: Usuário não retornado.');
@@ -120,7 +135,8 @@ export const useAuthStore = defineStore('auth', () => {
 
     const logout = () => {
         clearAuth();
-        window.location.reload(); // Simple way to clear state and redirect
+        // Navigate via href to fully reset app state without circular dep on router
+        window.location.replace('/login');
     };
 
     const checkAuth = async () => {
@@ -129,8 +145,6 @@ export const useAuthStore = defineStore('auth', () => {
         }
         try {
             const response = await apiGetMe();
-            // Backend returns { success: true, data: user }
-            // Handle both response.data.data and response.data structures
             const userData = response.data?.data || response.data;
 
             if (userData && typeof userData === 'object') {
