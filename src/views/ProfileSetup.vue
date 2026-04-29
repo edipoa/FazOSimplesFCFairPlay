@@ -103,7 +103,7 @@ const saveProfile = async () => {
   if (success) {
     saveMessage.value = 'Perfil salvo com sucesso!';
     setTimeout(() => {
-        router.push('/rate');
+        router.push(`rate`);
     }, 1500);
   } else {
     errorMessage.value = userStore.error || 'Erro ao salvar perfil. Tente novamente.';
@@ -128,7 +128,7 @@ const saveProfile = async () => {
         <input 
           v-model="form.name"
           type="text" 
-          class="block w-full pl-10 py-2.5 sm:text-sm rounded-lg bg-white dark:bg-neutral-800/80 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white focus:ring-[rgba(130,81,238,0.5)] focus:border-[rgba(130,81,238,1)] transition-colors" 
+          class="block w-full pl-10 py-2.5 sm:text-sm rounded-lg bg-white dark:bg-neutral-800/80 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white focus:ring-[rgba(0,214,111,0.5)] focus:border-[#00D66F] transition-colors" 
           placeholder="Seu nome"
         >
       </div>
@@ -139,7 +139,7 @@ const saveProfile = async () => {
       <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Posição Principal</label>
       <select 
         v-model="form.mainPosition"
-        class="block w-full pl-3 pr-10 py-2.5 text-base sm:text-sm rounded-lg bg-white dark:bg-neutral-800/80 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white focus:ring-[rgba(130,81,238,0.5)] focus:border-[rgba(130,81,238,1)] transition-colors"
+        class="block w-full pl-3 pr-10 py-2.5 text-base sm:text-sm rounded-lg bg-white dark:bg-neutral-800/80 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white focus:ring-[rgba(0,214,111,0.5)] focus:border-[#00D66F] transition-colors"
       >
         <option disabled value="">Selecione...</option>
         <option v-for="pos in positions" :key="pos.value" :value="pos.value" class="dark:bg-neutral-800">{{ pos.label }}</option>
@@ -158,7 +158,7 @@ const saveProfile = async () => {
           :class="[
             'px-3.5 py-1.5 rounded-full text-xs font-medium border transition-colors duration-200 cursor-pointer',
             form.secondaryPositions.includes(pos.value) 
-              ? 'bg-[rgba(130,81,238,0.1)] dark:bg-[rgba(130,81,238,0.15)] text-[rgba(130,81,238,1)] dark:text-[rgba(163,126,245,1)] border-[rgba(130,81,238,0.3)] dark:border-[rgba(130,81,238,0.4)] shadow-[0_0_10px_rgba(130,81,238,0.1)]' 
+              ? 'bg-[rgba(0,214,111,0.1)] dark:bg-[rgba(0,214,111,0.15)] text-[var(--bf-blue-primary)] dark:text-[var(--bf-green-light)] border-[rgba(0,214,111,0.3)] dark:border-[rgba(0,214,111,0.4)] shadow-[0_0_10px_rgba(0,214,111,0.1)]' 
               : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border-neutral-300 dark:border-neutral-600 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-200 dark:hover:bg-neutral-700'
           ]"
           :disabled="!form.secondaryPositions.includes(pos.value) && form.secondaryPositions.length >= 2"
@@ -177,7 +177,7 @@ const saveProfile = async () => {
             type="radio" 
             v-model="form.dominantFoot" 
             :value="foot.value"
-            class="focus:ring-[rgba(130,81,238,0.5)] h-4 w-4 text-[rgba(130,81,238,1)] border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 transition-colors"
+            class="focus:ring-[rgba(0,214,111,0.5)] h-4 w-4 text-[var(--bf-blue-primary)] border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 transition-colors"
           >
           <span class="ml-2.5 text-neutral-700 dark:text-neutral-300 font-medium text-sm group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">{{ foot.label }}</span>
         </label>
@@ -211,7 +211,7 @@ const saveProfile = async () => {
     <button 
       @click="saveProfile"
       :disabled="isSaving"
-      class="w-full flex justify-center cursor-pointer py-3 px-4 rounded-xl shadow-[0_4px_14px_0_rgba(130,81,238,0.39)] text-sm font-semibold text-white bg-[rgba(130,81,238,1)] hover:bg-[rgba(110,61,218,1)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[rgba(130,81,238,0.5)] dark:focus:ring-offset-neutral-900 disabled:opacity-50 disabled:shadow-none transition-all duration-200 active:scale-[0.98]"
+      class="w-full flex justify-center cursor-pointer py-3 px-4 rounded-xl shadow-[0_4px_14px_0_rgba(0,214,111,0.39)] text-sm font-semibold text-white bg-[#00D66F] hover:bg-[#00A854] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[rgba(0,214,111,0.5)] dark:focus:ring-offset-neutral-900 disabled:opacity-50 disabled:shadow-none transition-all duration-200 active:scale-[0.98]"
     >
       <span v-if="isSaving" class="flex items-center"><Loader2 class="w-4 h-4 mr-2 animate-spin" /> Salvando...</span>
       <span v-else>Salvar Perfil</span>
@@ -235,6 +235,6 @@ const saveProfile = async () => {
 }
 
 input[type="radio"] {
-  accent-color: rgba(130, 81, 238, 1);
+  accent-color: #00D66F;
 }
 </style>

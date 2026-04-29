@@ -32,7 +32,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 font-sans text-neutral-900 dark:text-neutral-50 flex flex-col relative selection:bg-[rgba(130,81,238,0.2)] selection:text-[rgba(130,81,238,1)] transition-colors duration-300">
+  <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 font-sans text-neutral-900 dark:text-neutral-50 flex flex-col relative selection:bg-[rgba(0,214,111,0.2)] selection:text-[var(--bf-blue-primary)] transition-colors duration-300">
 
     <!-- Premium Glass Header -->
     <header v-if="authStore.isAuthenticated" class="sticky top-0 z-50 w-full bg-white/60 dark:bg-neutral-900/60 backdrop-blur-md border-b border-neutral-200/50 dark:border-neutral-800/80 transition-colors duration-300">

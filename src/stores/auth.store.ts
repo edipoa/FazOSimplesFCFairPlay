@@ -4,6 +4,7 @@ import { ref, computed } from 'vue';
 
 import { requestOtp as apiRequestOtp, login as apiLogin, getMe as apiGetMe, type LoginResponse } from '../api/auth.service';
 import { workspaceContext } from '../api/workspace-context';
+import { ssoToken } from '../api/sso';
 
 // Safe function to load user from localStorage
 function getStoredUser() {
@@ -69,6 +70,7 @@ export const useAuthStore = defineStore('auth', () => {
         token.value = response.data.accessToken;
         isAuthenticated.value = true;
         localStorage.setItem('fairplay_token', response.data.accessToken);
+        ssoToken.set(response.data.accessToken);
         try {
             localStorage.setItem('fairplay_user', JSON.stringify(response.data.user));
         } catch (e) {
@@ -94,6 +96,7 @@ export const useAuthStore = defineStore('auth', () => {
         workspaceContext.set(null);
         localStorage.removeItem('fairplay_token');
         localStorage.removeItem('fairplay_user');
+        ssoToken.clear();
     };
 
     const requestOtp = async (phone: string) => {
@@ -141,7 +144,10 @@ export const useAuthStore = defineStore('auth', () => {
 
     const checkAuth = async () => {
         if (!token.value) {
-            return false;
+            const ssoT = ssoToken.get();
+            if (!ssoT) return false;
+            token.value = ssoT;
+            localStorage.setItem('fairplay_token', ssoT);
         }
         try {
             const response = await apiGetMe();

@@ -3,7 +3,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-    /* Bot Fut Design Tokens */
+    /* Faz o Simples Design Tokens */
     --font-size: 16px;
 
     /* Brand Colors */
@@ -15,35 +15,34 @@
     --bf-navy: #0A1628;
     --bf-navy-light: #1A2B42;
 
-    /* Base Colors - Polished Light Mode */
-    --background: #fafafa;
-    --foreground: #0a0a0a;
+    /* Base Colors */
+    --background: #F5F7FA;
+    --foreground: #0A1628;
     --card: #ffffff;
-    --card-foreground: #0a0a0a;
+    --card-foreground: #0A1628;
     --popover: #ffffff;
-    --popover-foreground: #0a0a0a;
+    --popover-foreground: #0A1628;
 
     /* Semantic Colors */
-    --primary: #8251ee;
-    /* matches Tailwind config */
+    --primary: #00D66F;
     --primary-foreground: #ffffff;
     --secondary: #0066FF;
     --secondary-foreground: #ffffff;
-    --muted: #f5f5f5;
-    --muted-foreground: #737373;
-    --accent: #f5f5f5;
-    --accent-foreground: #0a0a0a;
-    --destructive: #ef4444;
+    --muted: #E5E9F0;
+    --muted-foreground: #64748B;
+    --accent: #F1F5F9;
+    --accent-foreground: #0A1628;
+    --destructive: #EF4444;
     --destructive-foreground: #ffffff;
-    --success: #10b981;
-    --warning: #f59e0b;
-    --info: #3b82f6;
+    --success: #00D66F;
+    --warning: #F59E0B;
+    --info: #0066FF;
 
     /* UI Elements */
-    --border: #e5e5e5;
+    --border: #E2E8F0;
     --border-subtle: rgba(0, 0, 0, 0.05);
     --input: #ffffff;
-    --ring: rgba(130, 81, 238, 0.5);
+    --ring: rgba(0, 214, 111, 0.5);
 
     --radius-sm: 0.375rem;
     --radius: 0.5rem;
@@ -53,30 +52,28 @@
 }
 
 .dark {
-    /* Premium Dark Mode */
-    --background: #0a0a0a;
-    --foreground: #fafafa;
-    --card: #171717;
-    --card-foreground: #fafafa;
-    --popover: #171717;
-    --popover-foreground: #fafafa;
+    --background: #0A1628;
+    --foreground: #F5F7FA;
+    --card: #1A2B42;
+    --card-foreground: #F5F7FA;
+    --popover: #1A2B42;
+    --popover-foreground: #F5F7FA;
 
-    --primary: #a37ef5;
-    /* matches brand-light in config */
-    --primary-foreground: #0a0a0a;
-    --secondary: #3b82f6;
+    --primary: #00D66F;
+    --primary-foreground: #ffffff;
+    --secondary: #0066FF;
     --secondary-foreground: #ffffff;
 
-    --muted: #262626;
-    --muted-foreground: #a3a3a3;
+    --muted: #293548;
+    --muted-foreground: #94A3B8;
 
-    --accent: #262626;
-    --accent-foreground: #fafafa;
+    --accent: #293548;
+    --accent-foreground: #F5F7FA;
 
-    --border: rgba(255, 255, 255, 0.1);
+    --border: #293548;
     --border-subtle: rgba(255, 255, 255, 0.05);
-    --input: rgba(255, 255, 255, 0.05);
-    --ring: rgba(163, 126, 245, 0.5);
+    --input: #1A2B42;
+    --ring: rgba(0, 214, 111, 0.5);
 }
 
 @theme inline {
@@ -100,24 +97,32 @@
     --color-input: var(--input);
     --color-ring: var(--ring);
 
-    /* Brand Specifics */
+    /* Brand tokens */
     --color-bf-green-primary: var(--bf-green-primary);
+    --color-bf-green-dark: var(--bf-green-dark);
+    --color-bf-green-light: var(--bf-green-light);
     --color-bf-blue-primary: var(--bf-blue-primary);
+    --color-bf-blue-dark: var(--bf-blue-dark);
     --color-bf-navy: var(--bf-navy);
+    --color-bf-navy-light: var(--bf-navy-light);
+
+    /* brand alias — existing components use text-brand, bg-brand/10, etc. */
+    --color-brand: var(--bf-green-primary);
+    --color-brand-light: var(--bf-green-light);
 
     --radius-sm: var(--radius-sm);
     --radius-md: var(--radius-md);
     --radius-lg: var(--radius-lg);
     --radius-xl: var(--radius-xl);
 
-    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-sans: 'Poppins', system-ui, -apple-system, sans-serif;
 }
 
 @layer base {
     body {
         background-color: var(--background);
         color: var(--foreground);
-        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        font-family: 'Poppins', system-ui, -apple-system, sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         transition: background-color 0.3s ease, color 0.3s ease;
@@ -130,8 +135,6 @@
 }
 
 @layer components {
-
-    /* Modern Glassmorphism Utilities */
     .glass {
         @apply backdrop-blur-md bg-white/60 border border-neutral-200/50 dark:bg-neutral-900/60 dark:border-neutral-800/80;
     }

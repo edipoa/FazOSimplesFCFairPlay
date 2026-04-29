@@ -47,6 +47,23 @@ const router = createRouter({
             component: AdminTeamBuilder,
             meta: { requiresAuth: true, requiresAdmin: true },
         },
+        // Legacy URL without workspaceId — redirect using current workspace
+        {
+            path: '/admin/games/:id/builder',
+            redirect: (to) => {
+                const workspaceId = useAuthStore().currentWorkspaceId;
+                if (!workspaceId) return { name: 'login' };
+                return { name: 'admin-team-builder', params: { workspaceId, id: to.params.id } };
+            },
+        },
+        {
+            path: '/admin/games',
+            redirect: () => {
+                const workspaceId = useAuthStore().currentWorkspaceId;
+                if (!workspaceId) return { name: 'login' };
+                return { name: 'admin-games', params: { workspaceId } };
+            },
+        },
         // Fallback: redirect root to login (guard will forward to workspace once authed)
         {
             path: '/',

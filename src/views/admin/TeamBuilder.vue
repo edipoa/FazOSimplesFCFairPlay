@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import api from '../../api/axios';
 import draggable from 'vuedraggable';
@@ -31,6 +31,11 @@ const hasUnsavedChanges = ref(false);
 const lastSaved = ref<Date | null>(null);
 const showSuccessModal = ref(false);
 const showConfirmModal = ref(false);
+const showCopyModal = ref(false);
+
+const nowTick = ref(Date.now());
+const tickInterval = setInterval(() => { nowTick.value = Date.now(); }, 30_000);
+onUnmounted(() => clearInterval(tickInterval));
 
 // Computation for stats
 const calculateStats = (players: Player[]): TeamStats => {
@@ -160,8 +165,8 @@ const saveTeams = async () => {
     
     hasUnsavedChanges.value = false;
     lastSaved.value = new Date();
-    
-    // Show success modal
+    nowTick.value = Date.now();
+
     showSuccessModal.value = true;
   } catch (err: any) {
     error.value = 'Erro ao salvar times. Tente novamente.';
@@ -181,26 +186,23 @@ const copyToWhatsapp = () => {
     teamB.value.forEach((p, i) => message += `${i+1}. ${p.name} (${p.position})\n`);
 
     navigator.clipboard.writeText(message).then(() => {
-        alert('Times copiados para a área de transferência!');
+        showCopyModal.value = true;
     }).catch(err => {
         console.error('Failed to copy', err);
-        alert('Erro ao copiar.');
     });
 };
 
 const formatLastSaved = computed(() => {
   if (!lastSaved.value) return '';
-  const now = new Date();
-  const diff = now.getTime() - lastSaved.value.getTime();
-  const minutes = Math.floor(diff / 60000);
-  
+  const diff = nowTick.value - lastSaved.value.getTime();
+  const minutes = Math.floor(diff / 60_000);
+
   if (minutes < 1) return 'Salvo agora';
   if (minutes === 1) return 'Salvo há 1 minuto';
   if (minutes < 60) return `Salvo há ${minutes} minutos`;
-  
-  const hours = Math.floor(minutes / 60);
-  if (hours === 1) return 'Salvo há 1 hora';
-  return `Salvo há ${hours} horas`;
+
+  const time = lastSaved.value.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  return `Salvo às ${time}`;
 });
 
 onMounted(() => {
@@ -231,7 +233,7 @@ onMounted(() => {
             :disabled="saving || !hasUnsavedChanges"
             class="flex items-center px-4 py-2.5 rounded-lg transition-colors shadow-sm font-medium cursor-pointer disabled:cursor-not-allowed"
             :class="hasUnsavedChanges
-              ? 'bg-[rgba(130,81,238,1)] hover:bg-[rgba(110,61,218,1)] text-white shadow-[rgba(130,81,238,0.35)]'
+              ? 'bg-[#00D66F] hover:bg-[#00A854] text-white shadow-[rgba(0,214,111,0.35)]'
               : 'bg-neutral-200 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-500'"
           >
             <Save :class="['w-4 h-4 mr-2', saving ? 'animate-pulse' : '']" />
@@ -324,9 +326,9 @@ onMounted(() => {
                ghost-class="ghost-player-a"
              >
                <template #item="{ element }">
-                 <div class="bg-white dark:bg-neutral-800/80 p-3 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-700/60 flex justify-between items-center cursor-move hover:border-brand-light dark:hover:border-[rgba(130,81,238,0.5)] hover:shadow-md transition-all group">
+                 <div class="bg-white dark:bg-neutral-800/80 p-3 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-700/60 flex justify-between items-center cursor-move hover:border-brand-light dark:hover:border-[rgba(0,214,111,0.5)] hover:shadow-md transition-all group">
                    <div class="flex items-center space-x-3.5">
-                     <div class="h-9 w-9 rounded-full bg-neutral-200 dark:bg-neutral-600 flex items-center justify-center text-neutral-700 dark:text-white font-bold text-[11px] group-hover:bg-[rgba(130,81,238,0.15)] group-hover:text-[rgba(130,81,238,1)] dark:group-hover:bg-[rgba(130,81,238,0.25)] dark:group-hover:text-[rgba(163,126,245,1)] transition-colors">
+                     <div class="h-9 w-9 rounded-full bg-neutral-200 dark:bg-neutral-600 flex items-center justify-center text-neutral-700 dark:text-white font-bold text-[11px] group-hover:bg-[rgba(0,214,111,0.15)] group-hover:text-[var(--bf-blue-primary)] dark:group-hover:bg-[rgba(0,214,111,0.25)] dark:group-hover:text-[#4DFFB3] transition-colors">
                        {{ element.position.substring(0, 3) }}
                      </div>
                      <div>
@@ -417,7 +419,7 @@ onMounted(() => {
             
             <button
               @click="showSuccessModal = false"
-              class="w-full mt-8 px-6 py-3.5 cursor-pointer bg-[rgba(130,81,238,1)] text-white rounded-xl hover:bg-[rgba(110,61,218,1)] transition-colors font-medium shadow-[0_4px_14px_0_rgba(130,81,238,0.39)]"
+              class="w-full mt-8 px-6 py-3.5 cursor-pointer bg-[#00D66F] text-white rounded-xl hover:bg-[#00A854] transition-colors font-medium shadow-[0_4px_14px_0_rgba(0,214,111,0.39)]"
             >
               Continuar
             </button>
@@ -425,8 +427,38 @@ onMounted(() => {
         </div>
       </div>
 
+      <!-- Copy Modal -->
+      <div
+        v-if="showCopyModal"
+        @click="showCopyModal = false"
+        class="fixed inset-0 bg-neutral-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      >
+        <div
+          @click.stop
+          class="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl border border-emerald-500/30 dark:border-emerald-500/20 max-w-sm w-full p-8 animate-in"
+        >
+          <div class="text-center space-y-4">
+            <div class="flex justify-center">
+              <div class="w-20 h-20 bg-emerald-50 dark:bg-emerald-500/10 rounded-full flex items-center justify-center mb-2">
+                <Copy class="w-9 h-9 text-emerald-500" />
+              </div>
+            </div>
+            <h2 class="text-xl font-bold text-neutral-900 dark:text-white tracking-tight">Copiado!</h2>
+            <p class="text-neutral-600 dark:text-neutral-400 text-sm">
+              Times copiados para a área de transferência. Cole no WhatsApp ou onde preferir.
+            </p>
+            <button
+              @click="showCopyModal = false"
+              class="w-full mt-6 px-6 py-3.5 cursor-pointer bg-[#00D66F] text-white rounded-xl hover:bg-[#00A854] transition-colors font-medium shadow-[0_4px_14px_0_rgba(0,214,111,0.39)]"
+            >
+              Fechar
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- Confirmation Modal -->
-      <div 
+      <div
         v-if="showConfirmModal" 
         @click="showConfirmModal = false"
         class="fixed inset-0 bg-neutral-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-all duration-300"
@@ -457,7 +489,7 @@ onMounted(() => {
               </button>
               <button
                 @click="confirmRegenerate"
-                class="flex-1 px-4 py-3 cursor-pointer bg-[rgba(130,81,238,1)] text-white rounded-xl hover:bg-[rgba(110,61,218,1)] transition-colors font-medium shadow-[0_4px_14px_0_rgba(130,81,238,0.39)]"
+                class="flex-1 px-4 py-3 cursor-pointer bg-[#00D66F] text-white rounded-xl hover:bg-[#00A854] transition-colors font-medium shadow-[0_4px_14px_0_rgba(0,214,111,0.39)]"
               >
                 Continuar
               </button>
@@ -503,7 +535,7 @@ onMounted(() => {
   opacity: 0.5;
   transform: scale(0.98);
   background-color: rgba(130, 81, 238, 0.15); /* bg-brand-subtle */
-  border-color: rgba(130, 81, 238, 1); /* border-brand */
+  border-color: #00D66F; /* border-brand */
 }
 
 .ghost-player-b {

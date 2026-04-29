@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '../../stores/auth.store';
 import api from '../../api/axios';
 import { Calendar, Clock, Users, ChevronRight, AlertCircle, Loader2 } from 'lucide-vue-next';
 
@@ -17,6 +18,7 @@ const games = ref<Game[]>([]);
 const loading = ref(true);
 const error = ref('');
 const router = useRouter();
+const authStore = useAuthStore();
 
 const fetchGames = async () => {
   loading.value = true;
@@ -42,7 +44,8 @@ const goToBuilder = (game: Game) => {
     console.error('Game ID not found:', game);
     return;
   }
-  router.push(`/admin/games/${gameId}/builder`);
+  const workspaceId = authStore.currentWorkspaceId;
+  router.push({ name: 'admin-team-builder', params: { workspaceId, id: gameId } });
 };
 
 // Format date to e.g., "Sábado, 20 de Outubro"
@@ -134,11 +137,11 @@ onMounted(() => {
           v-for="(game, index) in sortedGames" 
           :key="game.id || game._id" 
           @click="goToBuilder(game)"
-          class="group relative bg-white/60 dark:bg-neutral-900/60 backdrop-blur-md rounded-2xl border border-neutral-200 dark:border-neutral-800/80 p-5 md:p-6 cursor-pointer hover:border-[rgba(130,81,238,0.5)] transition-all duration-300 hover:shadow-[0_0_30px_rgba(130,81,238,0.15)] hover:-translate-y-1 overflow-hidden"
+          class="group relative bg-white/60 dark:bg-neutral-900/60 backdrop-blur-md rounded-2xl border border-neutral-200 dark:border-neutral-800/80 p-5 md:p-6 cursor-pointer hover:border-[rgba(0,214,111,0.5)] transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,214,111,0.15)] hover:-translate-y-1 overflow-hidden"
           :style="{ animationDelay: `${index * 80}ms` }"
         >
           <!-- Background decorative gradient -->
-          <div class="absolute -top-24 -right-24 w-48 h-48 bg-[rgba(130,81,238,0.1)] dark:bg-[rgba(130,81,238,0.15)] rounded-full blur-3xl group-hover:bg-[rgba(130,81,238,0.2)] dark:group-hover:bg-[rgba(130,81,238,0.25)] transition-colors duration-500 pointer-events-none"></div>
+          <div class="absolute -top-24 -right-24 w-48 h-48 bg-[rgba(0,214,111,0.1)] dark:bg-[rgba(0,214,111,0.15)] rounded-full blur-3xl group-hover:bg-[rgba(0,214,111,0.2)] dark:group-hover:bg-[rgba(0,214,111,0.25)] transition-colors duration-500 pointer-events-none"></div>
 
           <!-- Card Header (Status Badge & Icon) -->
           <div class="flex justify-between items-start mb-5 relative z-10">
@@ -152,7 +155,7 @@ onMounted(() => {
               {{ game.status === 'confirmed' ? 'Confirmado' : 'Aberto' }}
             </span>
             
-            <div class="text-neutral-400 dark:text-neutral-500 group-hover:text-[rgba(163,126,245,1)] transition-colors bg-neutral-100/50 dark:bg-neutral-800/50 p-1.5 rounded-full">
+            <div class="text-neutral-400 dark:text-neutral-500 group-hover:text-[#4DFFB3] transition-colors bg-neutral-100/50 dark:bg-neutral-800/50 p-1.5 rounded-full">
               <ChevronRight class="w-4 h-4" />
             </div>
           </div>
@@ -166,15 +169,15 @@ onMounted(() => {
 
             <div class="flex flex-col gap-3 pt-5 mt-4 border-t border-neutral-100 dark:border-neutral-800/80">
               <div class="flex items-center text-neutral-600 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-neutral-200 transition-colors">
-                <div class="w-9 h-9 rounded-lg bg-neutral-100/80 dark:bg-neutral-800/80 flex items-center justify-center mr-3.5 border border-neutral-200/50 dark:border-neutral-700/50 group-hover:border-[rgba(130,81,238,0.3)] group-hover:bg-[rgba(130,81,238,0.1)] transition-colors">
-                  <Clock class="w-4.5 h-4.5 text-neutral-500 dark:text-neutral-400 group-hover:text-[rgba(163,126,245,1)] transition-colors" />
+                <div class="w-9 h-9 rounded-lg bg-neutral-100/80 dark:bg-neutral-800/80 flex items-center justify-center mr-3.5 border border-neutral-200/50 dark:border-neutral-700/50 group-hover:border-[rgba(0,214,111,0.3)] group-hover:bg-[rgba(0,214,111,0.1)] transition-colors">
+                  <Clock class="w-4.5 h-4.5 text-neutral-500 dark:text-neutral-400 group-hover:text-[#4DFFB3] transition-colors" />
                 </div>
                 <span class="font-medium tracking-wide text-md">{{ game.time }}</span>
               </div>
               
               <div class="flex items-center text-neutral-600 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-neutral-200 transition-colors">
-                <div class="w-9 h-9 rounded-lg bg-neutral-100/80 dark:bg-neutral-800/80 flex items-center justify-center mr-3.5 border border-neutral-200/50 dark:border-neutral-700/50 group-hover:border-[rgba(130,81,238,0.3)] group-hover:bg-[rgba(130,81,238,0.1)] transition-colors">
-                  <Users class="w-4.5 h-4.5 text-neutral-500 dark:text-neutral-400 group-hover:text-[rgba(163,126,245,1)] transition-colors" />
+                <div class="w-9 h-9 rounded-lg bg-neutral-100/80 dark:bg-neutral-800/80 flex items-center justify-center mr-3.5 border border-neutral-200/50 dark:border-neutral-700/50 group-hover:border-[rgba(0,214,111,0.3)] group-hover:bg-[rgba(0,214,111,0.1)] transition-colors">
+                  <Users class="w-4.5 h-4.5 text-neutral-500 dark:text-neutral-400 group-hover:text-[#4DFFB3] transition-colors" />
                 </div>
                 <span class="font-medium tracking-wide">
                   <span :class="game.confirmedCount > 0 ? 'text-neutral-900 dark:text-white font-bold' : 'text-neutral-400 dark:text-neutral-500'">{{ game.confirmedCount }}</span>
@@ -185,7 +188,7 @@ onMounted(() => {
           </div>
 
           <!-- Action Area (Visible on Hover) -->
-          <div class="mt-6 w-full bg-[rgba(130,81,238,0.1)] dark:bg-[rgba(130,81,238,0.15)] text-[rgba(130,81,238,1)] dark:text-[rgba(163,126,245,1)] py-3 px-4 rounded-xl text-center text-sm font-semibold opacity-0 group-hover:opacity-100 translate-y-3 group-hover:translate-y-0 transition-all duration-300 border border-[rgba(130,81,238,0.2)] dark:border-[rgba(130,81,238,0.3)] flex items-center justify-center shadow-[0_0_15px_rgba(130,81,238,0.05)] dark:shadow-[0_0_15px_rgba(130,81,238,0.1)]">
+          <div class="mt-6 w-full bg-[rgba(0,214,111,0.1)] dark:bg-[rgba(0,214,111,0.15)] text-[var(--bf-blue-primary)] dark:text-[var(--bf-green-light)] py-3 px-4 rounded-xl text-center text-sm font-semibold opacity-0 group-hover:opacity-100 translate-y-3 group-hover:translate-y-0 transition-all duration-300 border border-[rgba(0,214,111,0.2)] dark:border-[rgba(0,214,111,0.3)] flex items-center justify-center shadow-[0_0_15px_rgba(0,214,111,0.05)] dark:shadow-[0_0_15px_rgba(0,214,111,0.1)]">
               Gerenciar Times
               <ChevronRight class="w-4 h-4 ml-1.5 opacity-80" />
           </div>

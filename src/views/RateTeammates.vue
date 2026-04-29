@@ -142,8 +142,8 @@ onBeforeRouteLeave((_to, _from, next) => {
       <div 
         v-for="player in players" 
         :key="player.id" 
-        class="bg-white/60 dark:bg-neutral-900/60 backdrop-blur-md rounded-2xl border border-neutral-200 dark:border-neutral-800/80 p-5 flex flex-col items-center space-y-4 hover:border-[rgba(130,81,238,0.5)] transition-all duration-300 hover:shadow-[0_0_20px_rgba(130,81,238,0.1)] group"
-        :class="{ 'ring-1 ring-[rgba(130,81,238,0.5)] border-[rgba(130,81,238,0.5)] bg-[rgba(130,81,238,0.05)] dark:bg-[rgba(130,81,238,0.1)]': pendingRatings[player.id] !== undefined }"
+        class="bg-white/60 dark:bg-neutral-900/60 backdrop-blur-md rounded-2xl border border-neutral-200 dark:border-neutral-800/80 p-5 flex flex-col items-center space-y-4 hover:border-[rgba(0,214,111,0.5)] transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,214,111,0.1)] group"
+        :class="{ 'ring-1 ring-[rgba(0,214,111,0.5)] border-[rgba(0,214,111,0.5)] bg-[rgba(0,214,111,0.05)] dark:bg-[rgba(0,214,111,0.1)]': pendingRatings[player.id] !== undefined }"
       >
         <div class="h-14 w-14 rounded-full bg-brand/10 dark:bg-brand/20 flex items-center justify-center text-brand dark:text-brand-light font-bold text-xl shadow-inner group-hover:bg-brand/20 dark:group-hover:bg-brand/30 transition-colors">
           {{ player.name.charAt(0).toUpperCase() }}
@@ -182,7 +182,7 @@ onBeforeRouteLeave((_to, _from, next) => {
           <button 
             @click="submitRatings"
             :disabled="isSubmitting"
-            class="inline-flex items-center cursor-pointer px-6 py-2.5 rounded-xl shadow-[0_4px_14px_0_rgba(130,81,238,0.39)] text-sm font-semibold text-white bg-[rgba(130,81,238,1)] hover:bg-[rgba(110,61,218,1)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[rgba(130,81,238,0.5)] dark:focus:ring-offset-neutral-900 disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed transition-all duration-200 active:scale-[0.98]"
+            class="inline-flex items-center cursor-pointer px-6 py-2.5 rounded-xl shadow-[0_4px_14px_0_rgba(0,214,111,0.39)] text-sm font-semibold text-white bg-[#00D66F] hover:bg-[#00A854] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[rgba(0,214,111,0.5)] dark:focus:ring-offset-neutral-900 disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed transition-all duration-200 active:scale-[0.98]"
           >
             <Loader2 v-if="isSubmitting" class="animate-spin -ml-1 mr-2 h-4 w-4" />
             {{ isSubmitting ? 'Enviando...' : 'Submeter Votos' }}
