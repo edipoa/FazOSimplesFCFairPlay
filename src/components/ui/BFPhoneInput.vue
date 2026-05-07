@@ -34,7 +34,7 @@ const handleInput = (e: Event) => {
             :class="[
                 'relative flex items-center gap-3 px-4 h-14',
                 'bg-white border-2 rounded-xl transition-all duration-200',
-                focused && !error ? 'border-[var(--bf-blue-primary)] shadow-lg shadow-blue-500/10' : '',
+                focused && !error ? 'border-[var(--primary)] shadow-lg shadow-[var(--primary)]/10' : '',
                 error ? 'border-[var(--destructive)]' : (!focused ? 'border-[var(--border)]' : ''),
                 disabled ? 'opacity-50 cursor-not-allowed bg-gray-50' : '',
             ]"
@@ -42,7 +42,7 @@ const handleInput = (e: Event) => {
             <Phone
                 :class="[
                     'w-5 h-5 flex-shrink-0 transition-colors',
-                    focused && !error ? 'text-[var(--bf-blue-primary)]' : 'text-[var(--muted-foreground)]',
+                    focused && !error ? 'text-[var(--primary)]' : 'text-[var(--muted-foreground)]',
                     error ? 'text-[var(--destructive)]' : '',
                 ]"
             />
@@ -55,7 +55,7 @@ const handleInput = (e: Event) => {
                 @input="handleInput"
                 @focus="focused = true"
                 @blur="focused = false"
-                class="flex-1 bg-transparent outline-none text-[var(--foreground)] placeholder:text-[var(--muted-foreground)]"
+                class="flex-1 bg-transparent outline-none focus-visible:shadow-none text-[var(--foreground)] placeholder:text-[var(--muted-foreground)]"
                 :class="disabled ? 'cursor-not-allowed' : ''"
             />
         </div>

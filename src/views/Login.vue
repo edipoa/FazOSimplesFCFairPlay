@@ -85,18 +85,19 @@ const handleBack = () => {
 </script>
 
 <template>
-    <div class="fixed inset-0 bg-gradient-to-br from-[var(--bf-navy)] via-[var(--bf-navy-light)] to-[var(--bf-blue-primary)] flex items-center justify-center px-4 py-6 overflow-y-auto">
+    <div class="fixed inset-0 bg-gradient-to-br from-[var(--bf-navy)] via-[var(--bf-navy-light)] to-[#001f0d] flex items-center justify-center px-4 py-6 overflow-y-auto">
         <div class="w-full max-w-md">
 
             <!-- Logo + header -->
             <div class="text-center mb-8">
-                <div class="flex justify-center mb-6">
-                    <div class="bg-white p-4 rounded-2xl shadow-2xl">
-                        <BrandLogo size="sm" layout="horizontal" :show-subtitle="true" />
-                    </div>
+                <div class="flex justify-center mb-5">
+                    <BrandLogo size="md" layout="vertical" :show-title="false" :show-subtitle="false" />
                 </div>
-                <h1 class="text-3xl font-semibold text-white mb-2">Bem-vindo ao Faz o Simples</h1>
-                <p class="text-blue-200 text-sm">
+                <h1 class="text-3xl font-bold text-white leading-tight">Faz o Simples</h1>
+                <span class="inline-block mt-1 mb-3 px-3 py-0.5 rounded-full bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold tracking-widest uppercase">
+                    Fair Play
+                </span>
+                <p class="text-white/60 text-sm">
                     {{ step === 'phone' ? 'Entre com seu número de telefone' : 'Digite o código de verificação' }}
                 </p>
             </div>
@@ -106,8 +107,8 @@ const handleBack = () => {
 
                 <!-- Step dots -->
                 <div class="flex items-center justify-center gap-2 mb-8">
-                    <div :class="['h-2 rounded-full transition-all duration-300', step === 'phone' ? 'bg-[var(--bf-blue-primary)] w-8' : 'bg-gray-200 w-2']" />
-                    <div :class="['h-2 rounded-full transition-all duration-300', step === 'otp' ? 'bg-[var(--bf-blue-primary)] w-8' : 'bg-gray-200 w-2']" />
+                    <div :class="['h-2 rounded-full transition-all duration-300', step === 'phone' ? 'bg-[var(--primary)] w-8' : 'bg-gray-200 w-2']" />
+                    <div :class="['h-2 rounded-full transition-all duration-300', step === 'otp' ? 'bg-[var(--primary)] w-8' : 'bg-gray-200 w-2']" />
                 </div>
 
                 <!-- Error alert -->
@@ -130,9 +131,9 @@ const handleBack = () => {
                         {{ authStore.loading ? 'Enviando...' : 'Enviar código' }}
                     </BFButton>
 
-                    <div class="flex items-start gap-3 p-4 bg-blue-50 border-2 border-blue-100 rounded-xl">
-                        <Smartphone class="w-5 h-5 text-[var(--bf-blue-primary)] flex-shrink-0 mt-0.5" />
-                        <p class="text-sm text-blue-700">Você receberá um código de verificação via WhatsApp</p>
+                    <div class="flex items-start gap-3 p-4 bg-[var(--primary)]/10 border border-[var(--primary)]/20 rounded-xl">
+                        <Smartphone class="w-5 h-5 text-[var(--primary)] flex-shrink-0 mt-0.5" />
+                        <p class="text-sm text-[var(--foreground)]">Você receberá um código de verificação via WhatsApp</p>
                     </div>
                 </div>
 
@@ -149,7 +150,7 @@ const handleBack = () => {
 
                     <div class="text-center">
                         <p class="text-sm text-[var(--muted-foreground)]">Código enviado para</p>
-                        <p class="font-medium text-[var(--bf-blue-primary)] mt-1">{{ phone }}</p>
+                        <p class="font-medium text-[var(--primary)] mt-1">{{ phone }}</p>
                     </div>
 
                     <BFOTPInput v-model="otp" :loading="authStore.loading" :auto-focus="true" />
@@ -170,19 +171,19 @@ const handleBack = () => {
                             v-if="canResend"
                             @click="handleResend"
                             :disabled="authStore.loading"
-                            class="text-sm text-[var(--bf-blue-primary)] hover:underline disabled:opacity-50"
+                            class="text-sm text-[var(--primary)] hover:underline disabled:opacity-50"
                         >
                             Reenviar código
                         </button>
                         <p v-else class="text-sm text-[var(--muted-foreground)]">
-                            Reenviar código em <span class="text-[var(--bf-blue-primary)] font-medium">{{ resendCountdown }}s</span>
+                            Reenviar código em <span class="text-[var(--primary)] font-medium">{{ resendCountdown }}s</span>
                         </p>
                     </div>
                 </div>
             </div>
 
             <!-- Footer -->
-            <p class="text-center text-sm text-blue-200 mt-6">
+            <p class="text-center text-sm text-white/60 mt-6">
                 Ao continuar, você concorda com nossos
                 <button class="underline hover:text-white transition-colors">Termos de Uso</button>
             </p>

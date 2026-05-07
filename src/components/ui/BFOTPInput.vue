@@ -76,20 +76,20 @@ watch(() => props.autoFocus, (val) => {
                 :disabled="disabled || loading"
                 :class="[
                     'w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl font-bold',
-                    'bg-white border-2 rounded-xl transition-all duration-200 outline-none',
+                    'bg-white border-2 rounded-xl transition-all duration-200 outline-none focus-visible:shadow-none',
                     focused === index && !error
-                        ? 'border-[var(--bf-blue-primary)] shadow-lg shadow-blue-500/10 scale-105'
+                        ? 'border-[var(--primary)] shadow-lg shadow-[var(--primary)]/10 scale-105'
                         : '',
                     error ? 'border-[var(--destructive)]' : '',
                     digit.trim() && focused !== index && !error
-                        ? 'border-[var(--bf-green-primary)]'
+                        ? 'border-[var(--primary)]'
                         : '',
                     !digit.trim() && focused !== index && !error
                         ? 'border-[var(--border)]'
                         : '',
                     (disabled || loading)
                         ? 'opacity-50 cursor-not-allowed bg-gray-50'
-                        : 'hover:border-[var(--bf-blue-primary)]/50',
+                        : 'hover:border-[var(--primary)]/50',
                 ]"
                 @input="handleInput(index, $event)"
                 @keydown="handleKeyDown(index, $event)"
@@ -98,7 +98,7 @@ watch(() => props.autoFocus, (val) => {
                 @blur="focused = null"
                 :aria-label="`Dígito ${index + 1} de ${length}`"
             />
-            <Loader2 v-if="loading" class="w-5 h-5 ml-2 text-[var(--bf-blue-primary)] animate-spin" />
+            <Loader2 v-if="loading" class="w-5 h-5 ml-2 text-[var(--primary)] animate-spin" />
         </div>
         <p v-if="error" class="mt-3 text-sm text-[var(--destructive)] text-center flex items-center justify-center gap-1">
             <span class="inline-block w-1 h-1 rounded-full bg-[var(--destructive)]" />

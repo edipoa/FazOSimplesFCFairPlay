@@ -16,9 +16,9 @@ withDefaults(defineProps<{
 });
 
 const variantClasses: Record<string, string> = {
-    primary: 'bg-[var(--bf-green-primary)] hover:bg-[var(--bf-green-dark)] text-white shadow-sm',
-    secondary: 'bg-[var(--bf-blue-primary)] hover:bg-[var(--bf-blue-dark)] text-white shadow-sm',
-    outline: 'border-2 border-[var(--bf-blue-primary)] text-[var(--bf-blue-primary)] bg-transparent hover:bg-[var(--bf-blue-primary)]/10',
+    primary: 'bg-[var(--primary)] hover:bg-[var(--bf-green-dark)] text-[var(--primary-foreground)] shadow-sm',
+    secondary: 'bg-[var(--secondary)] hover:bg-[var(--bf-blue-dark)] text-[var(--secondary-foreground)] shadow-sm',
+    outline: 'border-2 border-[var(--primary)] text-[var(--primary)] bg-transparent hover:bg-[var(--primary)]/10',
     ghost: 'bg-transparent text-[var(--muted-foreground)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)]',
     danger: 'bg-[var(--destructive)] hover:bg-[var(--destructive)]/80 text-white shadow-sm',
 };
