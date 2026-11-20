@@ -103,7 +103,7 @@ const handleBack = () => {
             </div>
 
             <!-- Card -->
-            <div class="bg-white rounded-2xl shadow-2xl p-6 sm:p-8">
+            <div class="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 [--foreground:#0A0A0A] [--muted-foreground:#64748B] [--border:#E2E8F0]">
 
                 <!-- Step dots -->
                 <div class="flex items-center justify-center gap-2 mb-8">
